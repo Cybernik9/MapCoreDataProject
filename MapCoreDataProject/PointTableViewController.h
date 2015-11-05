@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  PointTableViewController.h
 //  MapCoreDataProject
 //
 //  Created by Admin on 05.11.15.
@@ -7,9 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreData/CoreData.h>
 
-@interface ViewController : UIViewController
-
+@interface PointTableViewController : UITableViewController
 
 @end
-

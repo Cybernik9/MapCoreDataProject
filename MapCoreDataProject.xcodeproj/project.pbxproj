@@ -7,15 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		845F586D1BEB7CAA00DED68C /* MapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 845F586C1BEB7CAA00DED68C /* MapAnnotation.m */; };
+		845F58721BEB865A00DED68C /* PointTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 845F58711BEB865A00DED68C /* PointTableViewController.m */; };
+		845F58751BEB885B00DED68C /* CreatePointViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 845F58741BEB885B00DED68C /* CreatePointViewController.m */; };
 		84B848B11BEB5F8B00E6F90B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B848B01BEB5F8B00E6F90B /* main.m */; };
 		84B848B41BEB5F8B00E6F90B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B848B31BEB5F8B00E6F90B /* AppDelegate.m */; };
-		84B848B71BEB5F8B00E6F90B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B848B61BEB5F8B00E6F90B /* ViewController.m */; };
+		84B848B71BEB5F8B00E6F90B /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B848B61BEB5F8B00E6F90B /* MapViewController.m */; };
 		84B848BA1BEB5F8B00E6F90B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84B848B81BEB5F8B00E6F90B /* Main.storyboard */; };
 		84B848BD1BEB5F8B00E6F90B /* MapCoreDataProject.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 84B848BB1BEB5F8B00E6F90B /* MapCoreDataProject.xcdatamodeld */; };
 		84B848BF1BEB5F8B00E6F90B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 84B848BE1BEB5F8B00E6F90B /* Assets.xcassets */; };
 		84B848C21BEB5F8B00E6F90B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84B848C01BEB5F8B00E6F90B /* LaunchScreen.storyboard */; };
 		84B848CD1BEB5F8B00E6F90B /* MapCoreDataProjectTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B848CC1BEB5F8B00E6F90B /* MapCoreDataProjectTests.m */; };
 		84B848D81BEB5F8B00E6F90B /* MapCoreDataProjectUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B848D71BEB5F8B00E6F90B /* MapCoreDataProjectUITests.m */; };
+		84B848E61BEB607B00E6F90B /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84B848E51BEB607B00E6F90B /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,12 +40,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		845F586B1BEB7CAA00DED68C /* MapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapAnnotation.h; sourceTree = "<group>"; };
+		845F586C1BEB7CAA00DED68C /* MapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapAnnotation.m; sourceTree = "<group>"; };
+		845F58701BEB865A00DED68C /* PointTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PointTableViewController.h; sourceTree = "<group>"; };
+		845F58711BEB865A00DED68C /* PointTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PointTableViewController.m; sourceTree = "<group>"; };
+		845F58731BEB885B00DED68C /* CreatePointViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreatePointViewController.h; sourceTree = "<group>"; };
+		845F58741BEB885B00DED68C /* CreatePointViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreatePointViewController.m; sourceTree = "<group>"; };
 		84B848AC1BEB5F8B00E6F90B /* MapCoreDataProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapCoreDataProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84B848B01BEB5F8B00E6F90B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		84B848B21BEB5F8B00E6F90B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		84B848B31BEB5F8B00E6F90B /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		84B848B51BEB5F8B00E6F90B /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		84B848B61BEB5F8B00E6F90B /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		84B848B51BEB5F8B00E6F90B /* MapViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
+		84B848B61BEB5F8B00E6F90B /* MapViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
 		84B848B91BEB5F8B00E6F90B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		84B848BC1BEB5F8B00E6F90B /* MapCoreDataProject.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MapCoreDataProject.xcdatamodel; sourceTree = "<group>"; };
 		84B848BE1BEB5F8B00E6F90B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -53,6 +63,7 @@
 		84B848D31BEB5F8B00E6F90B /* MapCoreDataProjectUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MapCoreDataProjectUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		84B848D71BEB5F8B00E6F90B /* MapCoreDataProjectUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapCoreDataProjectUITests.m; sourceTree = "<group>"; };
 		84B848D91BEB5F8B00E6F90B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		84B848E51BEB607B00E6F90B /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84B848E61BEB607B00E6F90B /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +92,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		845F586E1BEB7CB200DED68C /* Map */ = {
+			isa = PBXGroup;
+			children = (
+				84B848B51BEB5F8B00E6F90B /* MapViewController.h */,
+				84B848B61BEB5F8B00E6F90B /* MapViewController.m */,
+				845F586B1BEB7CAA00DED68C /* MapAnnotation.h */,
+				845F586C1BEB7CAA00DED68C /* MapAnnotation.m */,
+			);
+			name = Map;
+			sourceTree = "<group>";
+		};
+		845F586F1BEB85FD00DED68C /* Point */ = {
+			isa = PBXGroup;
+			children = (
+				845F58701BEB865A00DED68C /* PointTableViewController.h */,
+				845F58711BEB865A00DED68C /* PointTableViewController.m */,
+				845F58731BEB885B00DED68C /* CreatePointViewController.h */,
+				845F58741BEB885B00DED68C /* CreatePointViewController.m */,
+			);
+			name = Point;
+			sourceTree = "<group>";
+		};
 		84B848A31BEB5F8B00E6F90B = {
 			isa = PBXGroup;
 			children = (
@@ -87,6 +121,7 @@
 				84B848CB1BEB5F8B00E6F90B /* MapCoreDataProjectTests */,
 				84B848D61BEB5F8B00E6F90B /* MapCoreDataProjectUITests */,
 				84B848AD1BEB5F8B00E6F90B /* Products */,
+				84B848E51BEB607B00E6F90B /* MapKit.framework */,
 			);
 			sourceTree = "<group>";
 		};
@@ -105,8 +140,8 @@
 			children = (
 				84B848B21BEB5F8B00E6F90B /* AppDelegate.h */,
 				84B848B31BEB5F8B00E6F90B /* AppDelegate.m */,
-				84B848B51BEB5F8B00E6F90B /* ViewController.h */,
-				84B848B61BEB5F8B00E6F90B /* ViewController.m */,
+				845F586F1BEB85FD00DED68C /* Point */,
+				845F586E1BEB7CB200DED68C /* Map */,
 				84B848B81BEB5F8B00E6F90B /* Main.storyboard */,
 				84B848BE1BEB5F8B00E6F90B /* Assets.xcassets */,
 				84B848C01BEB5F8B00E6F90B /* LaunchScreen.storyboard */,
@@ -273,10 +308,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84B848B71BEB5F8B00E6F90B /* ViewController.m in Sources */,
+				84B848B71BEB5F8B00E6F90B /* MapViewController.m in Sources */,
 				84B848B41BEB5F8B00E6F90B /* AppDelegate.m in Sources */,
 				84B848B11BEB5F8B00E6F90B /* main.m in Sources */,
+				845F58751BEB885B00DED68C /* CreatePointViewController.m in Sources */,
 				84B848BD1BEB5F8B00E6F90B /* MapCoreDataProject.xcdatamodeld in Sources */,
+				845F58721BEB865A00DED68C /* PointTableViewController.m in Sources */,
+				845F586D1BEB7CAA00DED68C /* MapAnnotation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -502,6 +540,7 @@
 				84B848DE1BEB5F8B00E6F90B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		84B848DF1BEB5F8B00E6F90B /* Build configuration list for PBXNativeTarget "MapCoreDataProjectTests" */ = {
 			isa = XCConfigurationList;
@@ -510,6 +549,7 @@
 				84B848E11BEB5F8B00E6F90B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		84B848E21BEB5F8B00E6F90B /* Build configuration list for PBXNativeTarget "MapCoreDataProjectUITests" */ = {
 			isa = XCConfigurationList;
@@ -518,6 +558,7 @@
 				84B848E41BEB5F8B00E6F90B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
