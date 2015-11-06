@@ -13,6 +13,11 @@
 @interface MapViewController : UIViewController
 
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
+@property (weak, nonatomic) IBOutlet UIButton *mapMypeButton;
+
+- (IBAction)actionZoom:(id)sender;
+- (IBAction)actionChangeMapType:(id)sender;
+- (IBAction)actionAddPoint:(id)sender;
 
 @end
 

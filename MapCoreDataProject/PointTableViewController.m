@@ -97,6 +97,7 @@
                                  [mapPoint valueForKey:@"latitude"],
                                  [mapPoint valueForKey:@"longitude"]];
     
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;
 }
 
@@ -115,8 +116,14 @@
         [context deleteObject:[self.mapPointsArray objectAtIndex:indexPath.row]];
         [self.mapPointsArray removeObjectAtIndex:indexPath.row];
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    }
+    
+    NSError *error = nil;
+    
+    if (![context save:&error]) {
         
-    }     
+        NSLog(@"error: %@ %@", error, [error localizedDescription]);
+    }
 }
 
 
@@ -136,13 +143,10 @@
 
 #pragma mark - UITableViewDelegate
 
-//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-//    
-//    
-//    
-//    UIViewController *controller = [self.storyboard instantiateViewControllerWithIdentifier:@"createViewController"];
-//    [self.navigationController pushViewController:controller animated:YES];
-//}
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    [self performSegueWithIdentifier:@"Update" sender:self];
+}
 
 #pragma mark - Navigation
 
@@ -152,31 +156,11 @@
     // Pass the selected object to the new view controller.
 
     if ([[segue identifier] isEqualToString:@"Update"]) {
-#warning Не працює перехід
+
         NSManagedObject  *selected = [self.mapPointsArray objectAtIndex:[[self.tableView indexPathForSelectedRow] row]];
         CreatePointViewController* createViewController = segue.destinationViewController;
         createViewController.create = selected;
     }
-    //else if ([[segue identifier] isEqualToString:@"Map"]) {
-        
-//        NSMutableArray *array;
-//        MapViewController* mapViewController = segue.destinationViewController;
-//        
-////        for (int i=0; i<[self.mapPointsArray count]; i++) {
-////
-////            NSManagedObject  *selected = [self.mapPointsArray objectAtIndex:i];
-////            [array addObject:selected];
-////        }
-//        
-//        [mapViewController.map addObjectsFromArray:self.mapPointsArray];
-        
-        //[self.map createMap:self.mapPointsArray];
-        
-        //[MapViewController addPointToMap:self.mapPointsArray];
-        
-    //}
-
-    
 }
 
 @end

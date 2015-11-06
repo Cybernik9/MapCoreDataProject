@@ -20,8 +20,8 @@
     
     if (self.create) {
         self.namePointTextField.text = [self.create valueForKey:@"namePoint"];
-        self.latitudeTextField.text = [self.create valueForKey:@"latitude"];
-        self.longitudeTextField.text = [self.create valueForKey:@"longitude"];
+        self.latitudeTextField.text = [NSString stringWithFormat:@"%@", [self.create valueForKey:@"latitude"]];
+        self.longitudeTextField.text = [NSString stringWithFormat:@"%@", [self.create valueForKey:@"longitude"]];
     }
 }
 
@@ -54,6 +54,36 @@
     return context;
 }
 
+#pragma mark - Alert -
+
+- (UIAlertController *)createAlertControllerWithTitle:(NSString *)title message:(NSString *)message {
+    
+    UIAlertController * alert =   [UIAlertController
+                                  alertControllerWithTitle:title
+                                  message:message
+                                  preferredStyle:UIAlertControllerStyleAlert];
+    
+    return alert;
+}
+
+- (void)actionWithTitle:(NSString *)title alertTitle:(NSString *)alertTitle alertMessage:(NSString *)alertMessage {
+    
+    UIAlertController * alert = [self createAlertControllerWithTitle:alertTitle message:alertMessage];
+    
+    UIAlertAction* alertAction = [UIAlertAction
+                               actionWithTitle:title
+                               style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction * action)
+                               {
+                                   [alert dismissViewControllerAnimated:YES completion:nil];
+                                   [self.navigationController popViewControllerAnimated:YES];
+                                   
+                               }];
+    
+    [alert addAction:alertAction];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
 #pragma mark - Action -
 
 - (IBAction)actionSaveButton:(id)sender {
@@ -65,20 +95,28 @@
     
     if (self.create) {
         
-        [self.create setValue:self.namePointTextField forKey:@"namePoint"];
-        [self.create setValue:self.latitudeTextField forKey:@"latitude"];
-        [self.create setValue:self.longitudeTextField forKey:@"longitude"];
+        [self.create setValue:self.namePointTextField.text forKey:@"namePoint"];
+        [self.create setValue:[NSNumber numberWithDouble:latitude] forKey:@"latitude"];
+        [self.create setValue:[NSNumber numberWithDouble:longitude] forKey:@"longitude"];
+        
+        [self saveToCoreData:context];
         
         return;
     }
-    
-    
-    NSManagedObject *newMapPoint = [NSEntityDescription insertNewObjectForEntityForName:@"MapPoints"
-                                                              inManagedObjectContext:context];
-    
-    [newMapPoint setValue:self.namePointTextField.text forKey:@"namePoint"];
-    [newMapPoint setValue:[NSNumber numberWithDouble:latitude] forKey:@"latitude"];
-    [newMapPoint setValue:[NSNumber numberWithDouble:longitude] forKey:@"longitude"];
+    else {
+        
+        NSManagedObject *newMapPoint = [NSEntityDescription insertNewObjectForEntityForName:@"MapPoints"
+                                                                     inManagedObjectContext:context];
+        
+        [newMapPoint setValue:self.namePointTextField.text forKey:@"namePoint"];
+        [newMapPoint setValue:[NSNumber numberWithDouble:latitude] forKey:@"latitude"];
+        [newMapPoint setValue:[NSNumber numberWithDouble:longitude] forKey:@"longitude"];
+        
+        [self saveToCoreData:context];
+    }
+}
+
+- (void)saveToCoreData:(NSManagedObjectContext *)context {
     
     NSError *error = nil;
     
@@ -86,34 +124,14 @@
         
         NSLog(@"error: %@ %@", error, [error localizedDescription]);
         
-        UIAlertController * alert=   [UIAlertController
-                                      alertControllerWithTitle:@"Error"
-                                      message:@"Save is not successful!"
-                                      preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController * alert = [self createAlertControllerWithTitle:@"Error" message:@"Save is not successful!"];
         
         [self presentViewController:alert animated:YES completion:nil];
     }
     else {
         
-        UIAlertController * alert=   [UIAlertController
-                                      alertControllerWithTitle:@"Save"
-                                      message:@"Save successful"
-                                      preferredStyle:UIAlertControllerStyleAlert];
-        
-        UIAlertAction* yesButton = [UIAlertAction
-                                    actionWithTitle:@"Ok"
-                                    style:UIAlertActionStyleDefault
-                                    handler:^(UIAlertAction * action)
-                                    {
-                                        [alert dismissViewControllerAnimated:YES completion:nil];
-                                        [self.navigationController popViewControllerAnimated:YES];
-                                        
-                                    }];
-        
-        [alert addAction:yesButton];
-        [self presentViewController:alert animated:YES completion:nil];
+        [self actionWithTitle:@"Ok" alertTitle:@"Save" alertMessage:@"Save successful"];
     }
-    
 }
 
 #pragma mark - UITextFieldDelegate -
