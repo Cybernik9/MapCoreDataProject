@@ -9,20 +9,73 @@
 #import "MapViewController.h"
 #import "MapAnnotation.h"
 
-@interface MapViewController ()
+@interface MapViewController () <MKMapViewDelegate>
 
 @property (strong, nonatomic) NSMutableArray* mapPointArray;
+@property (strong, nonatomic) CLLocationManager *locationManager;
 
 @end
 
 @implementation MapViewController
+
+typedef NS_ENUM(NSUInteger, MapType) {
+    
+    MapTypeSatellite  = 0,
+    MapTypeHybrid,
+    MapTypeStandard
+};
 
 static bool isLongPress;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    
+//    self.locationManager = [[CLLocationManager alloc] init];
+//    self.locationManager.delegate = self;
+//    // Check for iOS 8. Without this guard the code will crash with "unknown selector" on iOS 7.
+//    if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+//        [self.locationManager requestWhenInUseAuthorization];
+//    }
+//    [self.locationManager startUpdatingLocation];
+//    
+//    // TODO: Add NSLocationWhenInUseUsageDescription in MyApp-Info.plist and give it a string
+//    
+//    // Check for iOS 8
+//    if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+//        [self.locationManager requestWhenInUseAuthorization];
+//    }
+//    self.mapView.showsUserLocation = YES;
 }
+
+// Location Manager Delegate Methods
+//- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+//{
+//    NSLog(@"%@", [locations lastObject]);
+//}
+//
+//- (void)requestAlwaysAuthorization
+//{
+//    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+//    
+//    // If the status is denied or only granted for when in use, display an alert
+//    if (status == kCLAuthorizationStatusAuthorizedWhenInUse || status == kCLAuthorizationStatusDenied) {
+//        NSString *title;
+//        title = (status == kCLAuthorizationStatusDenied) ? @"Location services are off" : @"Background location is not enabled";
+//        NSString *message = @"To use background location you must turn on 'Always' in the Location Services Settings";
+//        
+//        UIAlertController *alert = [UIAlertController
+//                                    alertControllerWithTitle:title
+//                                    message:message
+//                                    preferredStyle:UIAlertControllerStyleAlert];
+//        
+//        [self presentViewController:alert animated:YES completion:nil];
+//    }
+//    // The user has not enabled any location services. Request background authorization.
+//    else if (status == kCLAuthorizationStatusNotDetermined) {
+//        [self.locationManager requestAlwaysAuthorization];
+//    }
+//}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -33,6 +86,7 @@ static bool isLongPress;
     [super viewDidAppear:animated];
     
     [self createMap];
+    [self actionSegmentedControl:self.segmentedControl];
 }
 
 #pragma mark - Core Data -
@@ -77,55 +131,6 @@ static bool isLongPress;
     }
 }
 
-#pragma - Action -
-
-- (IBAction)actionZoom:(id)sender {
-    
-    MKMapRect zoomRect = MKMapRectNull;
-    
-    for (id <MKAnnotation> annotation in self.mapView.annotations) {
-        
-        CLLocationCoordinate2D location = annotation.coordinate;
-        
-        MKMapPoint center = MKMapPointForCoordinate(location);
-        
-        static double delta = 20000;
-        
-        MKMapRect rect = MKMapRectMake(center.x - delta, center.y - delta, delta * 2, delta * 2);
-        
-        zoomRect = MKMapRectUnion(zoomRect, rect);
-    }
-    
-    zoomRect = [self.mapView mapRectThatFits:zoomRect];
-    
-    [self.mapView setVisibleMapRect:zoomRect
-                        edgePadding:UIEdgeInsetsMake(50, 50, 50, 50)
-                           animated:YES];
-}
-
-- (IBAction)actionChangeMapType:(id)sender {
-    
-    static bool isMapType = YES;
-    
-    if (isMapType) {
-        self.mapView.mapType = MKMapTypeHybrid;
-        isMapType = NO;
-        [self.mapMypeButton setTitle:@"Map" forState:UIControlStateNormal];
-    } else {
-        self.mapView.mapType = MKMapTypeStandard;
-        isMapType = YES;
-        [self.mapMypeButton setTitle:@"Hybrid" forState:UIControlStateNormal];
-    }
-}
-
-- (IBAction)actionAddPoint:(id)sender {
-    
-    isLongPress = YES;
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
-    [self.mapView addGestureRecognizer:longPress];
-    //[longPress release];
-}
-
 - (void)longPress:(UILongPressGestureRecognizer*)gesture {
     
     if (gesture.state == UIGestureRecognizerStateEnded && isLongPress) {
@@ -159,7 +164,7 @@ static bool isLongPress;
                                      handler:^(UIAlertAction *action)
                                      {
                                          //Stores what has been inputted into the NSString Fullname
-
+                                         
                                          UITextField * textField = alertController.textFields.firstObject;
                                          
                                          NSManagedObjectContext *context = [self managedObjectContext];
@@ -176,18 +181,168 @@ static bool isLongPress;
                                              
                                              NSLog(@"error: %@ %@", error, [error localizedDescription]);
                                          }
-
+                                         
                                          [self createMap];
                                      }];
         
         UIAlertAction *cancelAction = [UIAlertAction
-                                     actionWithTitle:@"Cancel"
-                                     style:UIAlertActionStyleDefault
-                                     handler:^(UIAlertAction *action) {
-                                     }];
+                                       actionWithTitle:@"Cancel"
+                                       style:UIAlertActionStyleCancel
+                                       handler:^(UIAlertAction *action) {
+                                       }];
         
-        [alertController addAction:saveAction];
         [alertController addAction:cancelAction];
+        [alertController addAction:saveAction];
+    }
+}
+
+- (void) pinRoute {
+    
+    CLLocationCoordinate2D coordinateStart;
+    coordinateStart.latitude = 49.833534;
+    coordinateStart.longitude = 24.029518;
+    
+    CLLocationCoordinate2D coordinateEnd;
+    coordinateEnd.latitude = 50.406922;
+    coordinateEnd.longitude = 30.516957;
+    
+    [self addRouteForAnotationCoordinate:coordinateStart startCoordinate:coordinateEnd];
+}
+
+//Build routes
+
+- (void) addRouteForAnotationCoordinate:(CLLocationCoordinate2D)endCoordinate startCoordinate:(CLLocationCoordinate2D)startCoordinate {
+    
+    MKDirections* directions;
+    
+    MKDirectionsRequest* request = [[MKDirectionsRequest alloc] init];
+    
+    MKPlacemark* startPlacemark = [[MKPlacemark alloc] initWithCoordinate:startCoordinate
+                                                        addressDictionary:nil];
+    
+    MKMapItem* startDestination = [[MKMapItem alloc] initWithPlacemark:startPlacemark];
+    
+    request.source = startDestination;
+    
+    MKPlacemark* endPlacemark = [[MKPlacemark alloc] initWithCoordinate:endCoordinate
+                                                      addressDictionary:nil];
+    
+    MKMapItem* endDestination = [[MKMapItem alloc] initWithPlacemark:endPlacemark];
+    
+    request.destination = endDestination;
+    
+    request.transportType = MKDirectionsTransportTypeAutomobile;
+    
+    request.requestsAlternateRoutes = YES;
+    
+    directions = [[MKDirections alloc] initWithRequest:request];
+    
+    [directions calculateDirectionsWithCompletionHandler:^(MKDirectionsResponse *response, NSError *error) {
+        
+        if (error) {
+            
+        } else if ([response.routes count] == 0) {
+            
+        } else {
+            
+            NSMutableArray *array  = [NSMutableArray array];
+            for (MKRoute *route in response.routes) {
+                [array addObject:route.polyline];
+            }
+            [self.mapView addOverlays:array level:MKOverlayLevelAboveRoads];
+        }
+        
+    }];
+    
+}
+
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id <MKOverlay>)overlay {
+    
+    if ([overlay isKindOfClass:[MKPolyline class]]) {
+        
+        MKPolylineRenderer* renderer = [[MKPolylineRenderer alloc] initWithOverlay:overlay];
+        renderer.lineWidth = 2.f;
+        renderer.strokeColor = [UIColor colorWithRed:0.f green:0.5f blue:1.f alpha:0.9f];
+        return renderer;
+    }
+    return nil;
+}
+
+#pragma mark - Action -
+
+- (IBAction)actionZoom:(id)sender {
+    
+    MKMapRect zoomRect = MKMapRectNull;
+    
+    for (id <MKAnnotation> annotation in self.mapView.annotations) {
+        
+        CLLocationCoordinate2D location = annotation.coordinate;
+        
+        MKMapPoint center = MKMapPointForCoordinate(location);
+        
+        static double delta = 20000;
+        
+        MKMapRect rect = MKMapRectMake(center.x - delta, center.y - delta, delta * 2, delta * 2);
+        
+        zoomRect = MKMapRectUnion(zoomRect, rect);
+    }
+    
+    zoomRect = [self.mapView mapRectThatFits:zoomRect];
+    
+    [self.mapView setVisibleMapRect:zoomRect
+                        edgePadding:UIEdgeInsetsMake(50, 50, 50, 50)
+                           animated:YES];
+}
+
+- (IBAction)actionChangeMapType:(id)sender {
+    
+    static int mapType;
+    
+    switch (mapType) {
+            
+        case MapTypeSatellite:
+            self.mapView.mapType = MKMapTypeSatellite;
+            mapType++;
+            [self.mapMypeButton setTitle:@"Hybrid" forState:UIControlStateNormal];
+            break;
+            
+        case MapTypeHybrid:
+            self.mapView.mapType = MKMapTypeHybrid;
+            mapType++;
+            [self.mapMypeButton setTitle:@"Map" forState:UIControlStateNormal];
+            break;
+            
+        case MapTypeStandard:
+            self.mapView.mapType = MKMapTypeStandard;
+            mapType = 0;
+            [self.mapMypeButton setTitle:@"Satellite" forState:UIControlStateNormal];;
+            break;
+    }
+}
+
+- (IBAction)actionAddPoint:(id)sender {
+    
+    isLongPress = YES;
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
+    [self.mapView addGestureRecognizer:longPress];
+    //[longPress release];
+}
+
+- (IBAction)actionSegmentedControl:(UISegmentedControl *)sender {
+    
+    switch (sender.selectedSegmentIndex)
+    {
+        case 0:
+            NSLog(@"1");
+            
+            break;
+        case 1:
+            NSLog(@"2");
+            [self pinRoute];
+            break;
+        case 2:
+            NSLog(@"3");
+            break;
     }
 }
 
