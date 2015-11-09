@@ -12,6 +12,7 @@
 @interface MapViewController () <MKMapViewDelegate>
 
 @property (strong, nonatomic) NSMutableArray* mapPointArray;
+@property (strong, nonatomic) MapAnnotation* annotation;
 @property (strong, nonatomic) CLLocationManager *locationManager;
 
 @end
@@ -31,21 +32,26 @@ static bool isLongPress;
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-//    self.locationManager = [[CLLocationManager alloc] init];
+    
+//    [CLLocationManager requestWhenInUseAuthorization];
+    
+    self.locationManager = [[CLLocationManager alloc] init];
 //    self.locationManager.delegate = self;
-//    // Check for iOS 8. Without this guard the code will crash with "unknown selector" on iOS 7.
-//    if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-//        [self.locationManager requestWhenInUseAuthorization];
-//    }
-//    [self.locationManager startUpdatingLocation];
-//    
-//    // TODO: Add NSLocationWhenInUseUsageDescription in MyApp-Info.plist and give it a string
-//    
-//    // Check for iOS 8
+    // Check for iOS 8. Without this guard the code will crash with "unknown selector" on iOS 7.
+    if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [self.locationManager requestWhenInUseAuthorization];
+    }
+   
+    
+    // TODO: Add NSLocationWhenInUseUsageDescription in MyApp-Info.plist and give it a string
+    
+    // Check for iOS 8
 //    if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-//        [self.locationManager requestWhenInUseAuthorization];
+//        [self.locationManager requestAlwaysAuthorization];
 //    }
-//    self.mapView.showsUserLocation = YES;
+//     [self.locationManager startUpdatingLocation];
+    
+    self.mapView.showsUserLocation = YES;
 }
 
 // Location Manager Delegate Methods
@@ -86,7 +92,7 @@ static bool isLongPress;
     [super viewDidAppear:animated];
     
     [self createMap];
-    [self actionSegmentedControl:self.segmentedControl];
+    //[self actionSegmentedControl:self.segmentedControl];
 }
 
 #pragma mark - Core Data -
@@ -101,6 +107,35 @@ static bool isLongPress;
     }
     
     return context;
+}
+
+#pragma mark - MKMapViewDelegate -
+
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id <MKOverlay>)overlay {
+
+    if ([overlay isKindOfClass:[MKPolyline class]]) {
+        
+        MKPolylineRenderer* renderer = [[MKPolylineRenderer alloc] initWithOverlay:overlay];
+        renderer.lineWidth = 2.f;
+        renderer.strokeColor = [UIColor colorWithRed:0.f green:0.5f blue:1.f alpha:0.9f];
+        return renderer;
+    }
+    else if ([overlay isKindOfClass:[MKPolygon class]]) {
+    
+        MKPolygonRenderer *polygonView = [[MKPolygonRenderer alloc] initWithOverlay:overlay];
+        polygonView.lineWidth = 2.f;
+        polygonView.strokeColor = [UIColor magentaColor];
+        
+        return polygonView;
+    }
+    
+    return nil;
+}
+
+- (void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
+{
+    MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(userLocation.coordinate, 80000, 80000);
+    [self.mapView setRegion:[self.mapView regionThatFits:region] animated:YES];
 }
 
 #pragma mark - My metods -
@@ -198,15 +233,17 @@ static bool isLongPress;
 
 - (void) pinRoute {
     
-    CLLocationCoordinate2D coordinateStart;
-    coordinateStart.latitude = 49.833534;
-    coordinateStart.longitude = 24.029518;
+    for (int i=0; i<[self.mapPointArray count]; i++) {
+        
+        NSManagedObject *mapPointStart = [self.mapPointArray objectAtIndex:i];
+        
+        CLLocationCoordinate2D coordinateStart;
+        coordinateStart.latitude = [[mapPointStart valueForKey:@"latitude"] doubleValue];
+        coordinateStart.longitude = [[mapPointStart valueForKey:@"longitude"] doubleValue];
+        
+        [self addRouteForAnotationCoordinate:self.mapView.userLocation.coordinate startCoordinate:coordinateStart];
+    }
     
-    CLLocationCoordinate2D coordinateEnd;
-    coordinateEnd.latitude = 50.406922;
-    coordinateEnd.longitude = 30.516957;
-    
-    [self addRouteForAnotationCoordinate:coordinateStart startCoordinate:coordinateEnd];
 }
 
 //Build routes
@@ -248,7 +285,7 @@ static bool isLongPress;
             NSMutableArray *array  = [NSMutableArray array];
             for (MKRoute *route in response.routes) {
                 [array addObject:route.polyline];
-            }
+            }//magic don't touch
             [self.mapView addOverlays:array level:MKOverlayLevelAboveRoads];
         }
         
@@ -256,16 +293,35 @@ static bool isLongPress;
     
 }
 
-- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id <MKOverlay>)overlay {
+- (void)removeRoutes {
     
-    if ([overlay isKindOfClass:[MKPolyline class]]) {
+    [self.mapView removeOverlays:self.mapView.overlays];
+}
+
+- (void)createFigure {
+    
+    NSMutableDictionary *boundaryPoints = [[NSMutableDictionary alloc] init];
+    
+    CLLocationCoordinate2D *location; //= [[CLLocationCoordinate2D alloc] init];
+    
+    for (int i=0; i<[self.mapPointArray count]; i++) {
         
-        MKPolylineRenderer* renderer = [[MKPolylineRenderer alloc] initWithOverlay:overlay];
-        renderer.lineWidth = 2.f;
-        renderer.strokeColor = [UIColor colorWithRed:0.f green:0.5f blue:1.f alpha:0.9f];
-        return renderer;
+        NSManagedObject *mapPointStart = [self.mapPointArray objectAtIndex:i];
+        
+        CLLocationCoordinate2D coordinate;
+        coordinate.latitude = [[mapPointStart valueForKey:@"latitude"] doubleValue];
+        coordinate.longitude = [[mapPointStart valueForKey:@"longitude"] doubleValue];
+        
+        NSString *str = [NSString stringWithFormat:@"{%f,%f}", coordinate.latitude, coordinate.longitude];
+        //{34.4313,-118.59890}
+        
+        CGPoint p = CGPointFromString(str);
+        location[i] = CLLocationCoordinate2DMake[p.x, p.y];
     }
-    return nil;
+    
+    MKPolygon *polygon = [MKPolygon polygonWithCoordinates:location
+                                                     count:[self.mapPointArray count]];
+    [self.mapView addOverlay:polygon];
 }
 
 #pragma mark - Action -
@@ -334,7 +390,7 @@ static bool isLongPress;
     {
         case 0:
             NSLog(@"1");
-            
+            [self removeRoutes];
             break;
         case 1:
             NSLog(@"2");
@@ -342,6 +398,8 @@ static bool isLongPress;
             break;
         case 2:
             NSLog(@"3");
+            [self removeRoutes];
+            [self createFigure];
             break;
     }
 }

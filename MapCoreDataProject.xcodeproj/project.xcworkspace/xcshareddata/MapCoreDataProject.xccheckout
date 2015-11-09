@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>B8E703A8-63BD-4D0B-844A-F57E416887B8</string>
+	<key>IDESourceControlProjectName</key>
+	<string>MapCoreDataProject</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>E6AAB193247E8373314DE5ABA95662FA95838624</key>
+		<string>https://github.com/Cybernik9/MapCoreDataProject.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>MapCoreDataProject.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>E6AAB193247E8373314DE5ABA95662FA95838624</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/Cybernik9/MapCoreDataProject.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>E6AAB193247E8373314DE5ABA95662FA95838624</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>E6AAB193247E8373314DE5ABA95662FA95838624</string>
+			<key>IDESourceControlWCCName</key>
+			<string>MapCoreDataProject</string>
+		</dict>
+	</array>
+</dict>
+</plist>
