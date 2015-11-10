@@ -8,12 +8,15 @@
 
 #import "MapViewController.h"
 #import "MapAnnotation.h"
+#import "UIView+MKAnnotationView.h"
 
 @interface MapViewController () <MKMapViewDelegate>
 
 @property (strong, nonatomic) NSMutableArray* mapPointArray;
-@property (strong, nonatomic) MapAnnotation* annotation;
+//@property (strong, nonatomic) MapAnnotation* annotation;
 @property (strong, nonatomic) CLLocationManager *locationManager;
+//@property (strong, nonatomic) CLGeocoder* geoCoder;
+//@property (weak, nonatomic) MKAnnotationView* annotationView;
 
 @end
 
@@ -103,6 +106,38 @@ static bool isLongPress;
     [self.mapView setRegion:[self.mapView regionThatFits:region] animated:YES];
 }
 
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation {
+    
+    if ([annotation isKindOfClass:[MKUserLocation class]]) {
+        return nil;
+    }
+    
+    static NSString* identifier = @"MapAnnotation";
+    
+    MKPinAnnotationView* pin = (MKPinAnnotationView*)[mapView dequeueReusableAnnotationViewWithIdentifier:identifier];
+    
+    if (!pin) {
+        pin = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:identifier];
+        //pin.pinTintColor = MKPinAnnotationColorPurple;
+        pin.animatesDrop = YES;
+        pin.canShowCallout = YES;
+        pin.draggable = YES;
+        
+        UIButton* descriptionButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+        [descriptionButton addTarget:self action:@selector(actionDescription:) forControlEvents:UIControlEventTouchUpInside];
+        pin.rightCalloutAccessoryView = descriptionButton;
+        
+        UIButton* directionButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
+        [directionButton addTarget:self action:@selector(actionDirection:) forControlEvents:UIControlEventTouchUpInside];
+        pin.leftCalloutAccessoryView = directionButton;
+    }
+    else {
+        pin.annotation = annotation;
+    }
+    
+    return pin;
+}
+
 #pragma mark - My metods -
 
 - (void)createMap {
@@ -123,9 +158,9 @@ static bool isLongPress;
         
         annotation.coordinate = coordinate;
         annotation.title = [mapPoint valueForKey:@"namePoint"];
-        annotation.subtitle = [NSString stringWithFormat:@"%@, %@",
-                               [mapPoint valueForKey:@"latitude"],
-                               [mapPoint valueForKey:@"longitude"]];
+        annotation.subtitle = [NSString stringWithFormat:@"%.5g, %.5g",
+                               annotation.coordinate.latitude,
+                               annotation.coordinate.longitude];
         
         [self.mapView addAnnotation:annotation];
     }
@@ -279,6 +314,36 @@ static bool isLongPress;
     [self.mapView addOverlay:polygon];
 }
 
+#pragma mark - Alert -
+
+- (UIAlertController *)createAlertControllerWithTitle:(NSString *)title message:(NSString *)message {
+    
+    UIAlertController * alert =   [UIAlertController
+                                   alertControllerWithTitle:title
+                                   message:message
+                                   preferredStyle:UIAlertControllerStyleAlert];
+    
+    return alert;
+}
+
+- (void)actionWithTitle:(NSString *)title alertTitle:(NSString *)alertTitle alertMessage:(NSString *)alertMessage {
+    
+    UIAlertController * alert = [self createAlertControllerWithTitle:alertTitle message:alertMessage];
+    
+    UIAlertAction* alertAction = [UIAlertAction
+                                  actionWithTitle:title
+                                  style:UIAlertActionStyleCancel
+                                  handler:^(UIAlertAction * action)
+                                  {
+                                      //[alert dismissViewControllerAnimated:YES completion:nil];
+                                      
+                                  }];
+    
+    [alert addAction:alertAction];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+
 #pragma mark - Action -
 
 - (IBAction)actionZoom:(id)sender {
@@ -357,6 +422,71 @@ static bool isLongPress;
             [self createFigure];
             break;
     }
+}
+
+#pragma mark Action to pin button
+
+- (void) actionDescription:(UIButton*) sender {
+    
+    MKAnnotationView* annotationView = [sender superAnnotationView];
+    
+    if (!annotationView) {
+        return;
+    }
+    
+    CLGeocoder* geoCoder = [[CLGeocoder alloc] init];
+    CLLocationCoordinate2D coordinate = annotationView.annotation.coordinate;
+    
+    CLLocation* location = [[CLLocation alloc] initWithLatitude:coordinate.latitude
+                                                      longitude:coordinate.longitude];
+    
+    if ([geoCoder isGeocoding]) {
+        [geoCoder cancelGeocode];
+    }
+    
+    [geoCoder
+     reverseGeocodeLocation:location
+     completionHandler:^(NSArray *placemarks, NSError *error) {
+         
+         NSString* message = nil;
+         
+         if (error) {
+             
+             message = [error localizedDescription];
+             
+         } else {
+             
+             if ([placemarks count] > 0) {
+                 
+                 MKPlacemark* placeMark = [placemarks firstObject];
+                 
+                 message = [placeMark.addressDictionary description];
+                 
+             } else {
+                 message = @"No Placemarks Found";
+             }
+         }
+         
+         //[self showAlertWithTitle:@"Location" andMessage:message];
+         
+         [self actionWithTitle:@"OK" alertTitle:@"Location" alertMessage:message];
+     }];
+    
+}
+
+- (void) actionDirection:(UIButton*) sender {
+    
+    [self removeRoutes];
+    
+    MKAnnotationView* annotationView = [sender superAnnotationView];
+    
+    if (!annotationView) {
+        return;
+    }
+    
+    CLLocationCoordinate2D coordinate = annotationView.annotation.coordinate;
+    
+    [self addRouteForAnotationCoordinate:self.mapView.userLocation.coordinate startCoordinate:coordinate];
 }
 
 @end

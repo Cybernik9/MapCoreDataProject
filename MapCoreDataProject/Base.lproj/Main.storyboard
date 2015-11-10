@@ -103,6 +103,7 @@
                     <connections>
                         <outlet property="mapMypeButton" destination="Itt-Dc-xAz" id="bei-id-si9"/>
                         <outlet property="mapView" destination="UcZ-wD-Vta" id="c3L-q3-S6e"/>
+                        <outlet property="segmentedControl" destination="bPq-FK-tay" id="RUn-nl-ZYo"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DEQ-Ny-5g3" userLabel="First Responder" sceneMemberID="firstResponder"/>

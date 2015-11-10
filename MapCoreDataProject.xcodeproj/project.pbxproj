@@ -10,6 +10,7 @@
 		845F586D1BEB7CAA00DED68C /* MapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 845F586C1BEB7CAA00DED68C /* MapAnnotation.m */; };
 		845F58721BEB865A00DED68C /* PointTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 845F58711BEB865A00DED68C /* PointTableViewController.m */; };
 		845F58751BEB885B00DED68C /* CreatePointViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 845F58741BEB885B00DED68C /* CreatePointViewController.m */; };
+		84678C3F1BF230F1008888A7 /* UIView+MKAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 84678C3E1BF230F1008888A7 /* UIView+MKAnnotationView.m */; };
 		84B848B11BEB5F8B00E6F90B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B848B01BEB5F8B00E6F90B /* main.m */; };
 		84B848B41BEB5F8B00E6F90B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B848B31BEB5F8B00E6F90B /* AppDelegate.m */; };
 		84B848B71BEB5F8B00E6F90B /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84B848B61BEB5F8B00E6F90B /* MapViewController.m */; };
@@ -46,6 +47,8 @@
 		845F58711BEB865A00DED68C /* PointTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PointTableViewController.m; sourceTree = "<group>"; };
 		845F58731BEB885B00DED68C /* CreatePointViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreatePointViewController.h; sourceTree = "<group>"; };
 		845F58741BEB885B00DED68C /* CreatePointViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreatePointViewController.m; sourceTree = "<group>"; };
+		84678C3D1BF230F1008888A7 /* UIView+MKAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+MKAnnotationView.h"; sourceTree = "<group>"; };
+		84678C3E1BF230F1008888A7 /* UIView+MKAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+MKAnnotationView.m"; sourceTree = "<group>"; };
 		84B848AC1BEB5F8B00E6F90B /* MapCoreDataProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapCoreDataProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84B848B01BEB5F8B00E6F90B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		84B848B21BEB5F8B00E6F90B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -99,6 +102,8 @@
 				84B848B61BEB5F8B00E6F90B /* MapViewController.m */,
 				845F586B1BEB7CAA00DED68C /* MapAnnotation.h */,
 				845F586C1BEB7CAA00DED68C /* MapAnnotation.m */,
+				84678C3D1BF230F1008888A7 /* UIView+MKAnnotationView.h */,
+				84678C3E1BF230F1008888A7 /* UIView+MKAnnotationView.m */,
 			);
 			name = Map;
 			sourceTree = "<group>";
@@ -314,6 +319,7 @@
 				845F58751BEB885B00DED68C /* CreatePointViewController.m in Sources */,
 				84B848BD1BEB5F8B00E6F90B /* MapCoreDataProject.xcdatamodeld in Sources */,
 				845F58721BEB865A00DED68C /* PointTableViewController.m in Sources */,
+				84678C3F1BF230F1008888A7 /* UIView+MKAnnotationView.m in Sources */,
 				845F586D1BEB7CAA00DED68C /* MapAnnotation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
