@@ -14,7 +14,6 @@
 
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
 @property (weak, nonatomic) IBOutlet UIButton *mapMypeButton;
-@property (weak, nonatomic) IBOutlet UISegmentedControl *segmentedControl;
 
 - (IBAction)actionZoom:(id)sender;
 - (IBAction)actionChangeMapType:(id)sender;

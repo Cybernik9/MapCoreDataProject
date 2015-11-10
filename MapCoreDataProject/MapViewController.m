@@ -14,7 +14,6 @@
 @property (strong, nonatomic) NSMutableArray* mapPointArray;
 @property (strong, nonatomic) MapAnnotation* annotation;
 @property (strong, nonatomic) CLLocationManager *locationManager;
-//@property (nonatomic, strong) MKPolygon *polyline;
 
 @end
 
@@ -27,62 +26,28 @@ typedef NS_ENUM(NSUInteger, MapType) {
     MapTypeStandard
 };
 
+typedef NS_ENUM(NSUInteger, SegmentedControlType) {
+    
+    SegmentedControlTypeEmpty = 0,
+    SegmentedControlTypeRoad,
+    SegmentedControlTypeFigure
+};
+
 static bool isLongPress;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    
-    
-//    [CLLocationManager requestWhenInUseAuthorization];
-    
+
     self.locationManager = [[CLLocationManager alloc] init];
-//    self.locationManager.delegate = self;
+
     // Check for iOS 8. Without this guard the code will crash with "unknown selector" on iOS 7.
     if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
         [self.locationManager requestWhenInUseAuthorization];
     }
-   
-    
-    // TODO: Add NSLocationWhenInUseUsageDescription in MyApp-Info.plist and give it a string
-    
-    // Check for iOS 8
-//    if ([self.locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-//        [self.locationManager requestAlwaysAuthorization];
-//    }
-//     [self.locationManager startUpdatingLocation];
     
     self.mapView.showsUserLocation = YES;
 }
-
-// Location Manager Delegate Methods
-//- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
-//{
-//    NSLog(@"%@", [locations lastObject]);
-//}
-//
-//- (void)requestAlwaysAuthorization
-//{
-//    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
-//    
-//    // If the status is denied or only granted for when in use, display an alert
-//    if (status == kCLAuthorizationStatusAuthorizedWhenInUse || status == kCLAuthorizationStatusDenied) {
-//        NSString *title;
-//        title = (status == kCLAuthorizationStatusDenied) ? @"Location services are off" : @"Background location is not enabled";
-//        NSString *message = @"To use background location you must turn on 'Always' in the Location Services Settings";
-//        
-//        UIAlertController *alert = [UIAlertController
-//                                    alertControllerWithTitle:title
-//                                    message:message
-//                                    preferredStyle:UIAlertControllerStyleAlert];
-//        
-//        [self presentViewController:alert animated:YES completion:nil];
-//    }
-//    // The user has not enabled any location services. Request background authorization.
-//    else if (status == kCLAuthorizationStatusNotDetermined) {
-//        [self.locationManager requestAlwaysAuthorization];
-//    }
-//}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -93,7 +58,6 @@ static bool isLongPress;
     [super viewDidAppear:animated];
     
     [self createMap];
-    //[self actionSegmentedControl:self.segmentedControl];
 }
 
 #pragma mark - Core Data -
@@ -377,19 +341,18 @@ static bool isLongPress;
 
 - (IBAction)actionSegmentedControl:(UISegmentedControl *)sender {
     
-    switch (sender.selectedSegmentIndex)
-    {
-        case 0:
-            NSLog(@"1");
+    switch (sender.selectedSegmentIndex) {
+            
+        case SegmentedControlTypeEmpty:
             [self removeRoutes];
             break;
-        case 1:
-            NSLog(@"2");
+            
+        case SegmentedControlTypeRoad:
             [self removeRoutes];
             [self pinRoute];
             break;
-        case 2:
-            NSLog(@"3");
+            
+        case SegmentedControlTypeFigure:
             [self removeRoutes];
             [self createFigure];
             break;
