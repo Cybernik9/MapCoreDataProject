@@ -14,6 +14,7 @@
 @property (strong, nonatomic) NSMutableArray* mapPointArray;
 @property (strong, nonatomic) MapAnnotation* annotation;
 @property (strong, nonatomic) CLLocationManager *locationManager;
+//@property (nonatomic, strong) MKPolygon *polyline;
 
 @end
 
@@ -300,27 +301,17 @@ static bool isLongPress;
 
 - (void)createFigure {
     
-    NSMutableDictionary *boundaryPoints = [[NSMutableDictionary alloc] init];
+    CLLocationCoordinate2D coordinates[self.mapPointArray.count];
     
-    CLLocationCoordinate2D *location; //= [[CLLocationCoordinate2D alloc] init];
-    
-    for (int i=0; i<[self.mapPointArray count]; i++) {
+    for (int i=0; i < [self.mapPointArray count]; i++) {
         
-        NSManagedObject *mapPointStart = [self.mapPointArray objectAtIndex:i];
-        
-        CLLocationCoordinate2D coordinate;
-        coordinate.latitude = [[mapPointStart valueForKey:@"latitude"] doubleValue];
-        coordinate.longitude = [[mapPointStart valueForKey:@"longitude"] doubleValue];
-        
-        NSString *str = [NSString stringWithFormat:@"{%f,%f}", coordinate.latitude, coordinate.longitude];
-        //{34.4313,-118.59890}
-        
-        CGPoint p = CGPointFromString(str);
-        location[i] = CLLocationCoordinate2DMake[p.x, p.y];
+        NSManagedObject *mapPoint = [self.mapPointArray objectAtIndex:i];
+        coordinates[i].latitude = [[mapPoint valueForKey:@"latitude"] doubleValue];
+        coordinates[i].longitude = [[mapPoint valueForKey:@"longitude"] doubleValue];
     }
     
-    MKPolygon *polygon = [MKPolygon polygonWithCoordinates:location
-                                                     count:[self.mapPointArray count]];
+    // create a polygon with all cooridnates
+    MKPolygon *polygon = [MKPolygon polygonWithCoordinates:coordinates count:self.mapPointArray.count];
     [self.mapView addOverlay:polygon];
 }
 
@@ -394,6 +385,7 @@ static bool isLongPress;
             break;
         case 1:
             NSLog(@"2");
+            [self removeRoutes];
             [self pinRoute];
             break;
         case 2:
