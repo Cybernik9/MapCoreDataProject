@@ -26,12 +26,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MapCoreDataProject/MapViewController.m"
-            timestampString = "468857256.489562"
+            timestampString = "468972255.361436"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "433"
-            endingLineNumber = "433"
-            landmarkName = "-actionDescription:"
+            startingLineNumber = "452"
+            endingLineNumber = "452"
+            landmarkName = "-actionAddPoint:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MapCoreDataProject/MapViewController.m"
+            timestampString = "468971784.105467"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "151"
+            endingLineNumber = "151"
+            landmarkName = "-mapView:annotationView:didChangeDragState:fromOldState:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

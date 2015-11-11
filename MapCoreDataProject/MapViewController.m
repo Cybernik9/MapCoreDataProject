@@ -13,10 +13,7 @@
 @interface MapViewController () <MKMapViewDelegate>
 
 @property (strong, nonatomic) NSMutableArray* mapPointArray;
-//@property (strong, nonatomic) MapAnnotation* annotation;
 @property (strong, nonatomic) CLLocationManager *locationManager;
-//@property (strong, nonatomic) CLGeocoder* geoCoder;
-//@property (weak, nonatomic) MKAnnotationView* annotationView;
 
 @end
 
@@ -141,31 +138,52 @@ static bool isLongPress;
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view didChangeDragState:(MKAnnotationViewDragState)newState
    fromOldState:(MKAnnotationViewDragState)oldState {
     
-    if (newState == MKAnnotationViewDragStateEnding) {
+    static int i;
+    static NSString* strName;
+    
+    if (newState == MKAnnotationViewDragStateStarting) {
         
         CLLocationCoordinate2D location = view.annotation.coordinate;
         MKMapPoint point = MKMapPointForCoordinate(location);
         
         NSLog(@"\nNEW location = {%f, %f}\npoint = %@", location.latitude, location.longitude, MKStringFromMapPoint(point));
         
-//        NSManagedObjectContext *context = [self managedObjectContext];
-//        NSManagedObject *newMapPoint = [NSEntityDescription insertNewObjectForEntityForName:@"MapPoints"
-//                                                                     inManagedObjectContext:context];
-//        
-//        [newMapPoint setValue:textField.text forKey:@"namePoint"];
-//        [newMapPoint setValue:[NSNumber numberWithDouble:location.latitude] forKey:@"latitude"];
-//        [newMapPoint setValue:[NSNumber numberWithDouble:location.longitude] forKey:@"longitude"];
+        for (i=0; i<[self.mapPointArray count]; i++) {
+            
+            if ([[[self.mapPointArray objectAtIndex:i] valueForKey:@"latitude"] doubleValue] == location.latitude &&
+                [[[self.mapPointArray objectAtIndex:i] valueForKey:@"longitude"] doubleValue] == location.longitude) {
+                
+                strName = [[self.mapPointArray objectAtIndex:i] valueForKey:@"namePoint"];
+                return;
+            }
+        }
     }
-    else if (newState == MKAnnotationViewDragStateStarting) {
+    else if (newState == MKAnnotationViewDragStateEnding) {
         
         CLLocationCoordinate2D location = view.annotation.coordinate;
         MKMapPoint point = MKMapPointForCoordinate(location);
         
         NSLog(@"\nStart location = {%f, %f}\npoint = %@", location.latitude, location.longitude, MKStringFromMapPoint(point));
         
+        NSManagedObject *mapPoint = [self.mapPointArray objectAtIndex:i];
+
+        [mapPoint setValue:[NSNumber numberWithDouble:location.latitude] forKey:@"latitude"];
+        [mapPoint setValue:[NSNumber numberWithDouble:location.longitude] forKey:@"longitude"];
+        
+        for (MapAnnotation* annotation in self.mapView.annotations) {
+            
+            if ([annotation.title isEqualToString:strName]) {
+                
+                [self.mapView removeAnnotation:annotation];
+                
+                annotation.subtitle = [NSString stringWithFormat:@"%.5g, %.5g",
+                                       location.latitude,
+                                       location.longitude];
+                
+                [self.mapView addAnnotation:annotation];
+            }
+        }
     }
-    
-    
 }
 
 #pragma mark - My metods -
@@ -234,7 +252,7 @@ static bool isLongPress;
                                          
                                          NSManagedObjectContext *context = [self managedObjectContext];
                                          NSManagedObject *newMapPoint = [NSEntityDescription insertNewObjectForEntityForName:@"MapPoints"
-                                                                                                      inManagedObjectContext:context];
+                                                                    inManagedObjectContext:context];
                                          
                                          [newMapPoint setValue:textField.text forKey:@"namePoint"];
                                          [newMapPoint setValue:[NSNumber numberWithDouble:location.latitude] forKey:@"latitude"];
@@ -429,7 +447,8 @@ static bool isLongPress;
 - (IBAction)actionAddPoint:(id)sender {
     
     isLongPress = YES;
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]
+                                               initWithTarget:self action:@selector(longPress:)];
     [self.mapView addGestureRecognizer:longPress];
     //[longPress release];
 }
@@ -496,8 +515,6 @@ static bool isLongPress;
                  message = @"No Placemarks Found";
              }
          }
-         
-         //[self showAlertWithTitle:@"Location" andMessage:message];
          
          [self actionWithTitle:@"OK" alertTitle:@"Location" alertMessage:message];
      }];
