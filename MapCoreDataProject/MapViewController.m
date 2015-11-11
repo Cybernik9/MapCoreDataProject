@@ -100,8 +100,8 @@ static bool isLongPress;
     return nil;
 }
 
-- (void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
-{
+- (void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation {
+    
     MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(userLocation.coordinate, 80000, 80000);
     [self.mapView setRegion:[self.mapView regionThatFits:region] animated:YES];
 }
@@ -136,6 +136,36 @@ static bool isLongPress;
     }
     
     return pin;
+}
+
+- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view didChangeDragState:(MKAnnotationViewDragState)newState
+   fromOldState:(MKAnnotationViewDragState)oldState {
+    
+    if (newState == MKAnnotationViewDragStateEnding) {
+        
+        CLLocationCoordinate2D location = view.annotation.coordinate;
+        MKMapPoint point = MKMapPointForCoordinate(location);
+        
+        NSLog(@"\nNEW location = {%f, %f}\npoint = %@", location.latitude, location.longitude, MKStringFromMapPoint(point));
+        
+//        NSManagedObjectContext *context = [self managedObjectContext];
+//        NSManagedObject *newMapPoint = [NSEntityDescription insertNewObjectForEntityForName:@"MapPoints"
+//                                                                     inManagedObjectContext:context];
+//        
+//        [newMapPoint setValue:textField.text forKey:@"namePoint"];
+//        [newMapPoint setValue:[NSNumber numberWithDouble:location.latitude] forKey:@"latitude"];
+//        [newMapPoint setValue:[NSNumber numberWithDouble:location.longitude] forKey:@"longitude"];
+    }
+    else if (newState == MKAnnotationViewDragStateStarting) {
+        
+        CLLocationCoordinate2D location = view.annotation.coordinate;
+        MKMapPoint point = MKMapPointForCoordinate(location);
+        
+        NSLog(@"\nStart location = {%f, %f}\npoint = %@", location.latitude, location.longitude, MKStringFromMapPoint(point));
+        
+    }
+    
+    
 }
 
 #pragma mark - My metods -
