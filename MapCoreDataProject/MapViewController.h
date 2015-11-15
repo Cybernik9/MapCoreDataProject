@@ -10,7 +10,7 @@
 #import <MapKit/MapKit.h>
 #import <CoreData/CoreData.h>
 
-@interface MapViewController : UIViewController
+@interface MapViewController : UIViewController <MKMapViewDelegate>
 
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
 @property (weak, nonatomic) IBOutlet UIButton *mapMypeButton;

@@ -15,6 +15,7 @@
 @property (strong, nonatomic) NSMutableArray* mapPointArray;
 @property (strong, nonatomic) CLLocationManager *locationManager;
 @property (weak, nonatomic) MKAnnotationView* annotationViewRemoveRoute;
+@property (weak, nonatomic) UIButton* leftAnnotationButton;
 
 @end
 
@@ -35,6 +36,7 @@ typedef NS_ENUM(NSUInteger, SegmentedControlType) {
 };
 
 static bool isLongPress;
+static bool isLeftButton;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -116,7 +118,6 @@ static bool isLongPress;
     
     if (!pin) {
         pin = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:identifier];
-        //pin.pinTintColor = MKPinAnnotationColorPurple;
         pin.animatesDrop = YES;
         pin.canShowCallout = YES;
         pin.draggable = YES;
@@ -124,10 +125,20 @@ static bool isLongPress;
         UIButton* directionButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
         [directionButton addTarget:self action:@selector(actionDirection:) forControlEvents:UIControlEventTouchUpInside];
         pin.leftCalloutAccessoryView = directionButton;
+        self.leftAnnotationButton = directionButton;
         
-        UIButton* descriptionButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-        [descriptionButton addTarget:self action:@selector(actionDescription:) forControlEvents:UIControlEventTouchUpInside];
-        pin.rightCalloutAccessoryView = descriptionButton;
+        UIButton* leftDescriptionButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+        [leftDescriptionButton addTarget:self action:@selector(actionDescription:) forControlEvents:UIControlEventTouchUpInside];
+        
+#warning добавити кнопки
+//        UIButton* rightDescriptionButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+//        [rightDescriptionButton addTarget:self action:@selector(actionDescription:) forControlEvents:UIControlEventTouchUpInside];
+        
+//        NSInteger leftButtonSize = leftDescriptionButton.frame.origin.x + leftDescriptionButton
+//        
+//        UIView* viewRightCalloutAccessoryView = [UIView alloc] initWithFrame:CGRectMake(<#CGFloat x#>, <#CGFloat y#>, <#CGFloat width#>, <#CGFloat height#>)
+        
+        pin.rightCalloutAccessoryView = leftDescriptionButton;
     }
     else {
         pin.annotation = annotation;
@@ -183,12 +194,27 @@ static bool isLongPress;
                 
                 [self.mapView addAnnotation:annotation];
                 
-#warning як передати сендер
                 if (self.annotationViewRemoveRoute) {
-//                    [self actionDirection:<#(UIButton *)#>];
+                    [self removeRoutes];
+                    [self createRouteForAnotationCoordinate:self.mapView.userLocation.coordinate startCoordinate:annotation.coordinate];
+                    //self.annotationViewRemoveRoute = annotation;
                 }
             }
         }
+    }
+}
+
+- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
+    
+    if (isLeftButton) {
+        //view.leftCalloutAccessoryView = nil;
+        view.leftCalloutAccessoryView.hidden = YES;
+        view.draggable = NO;
+    }
+    else {
+        //view.leftCalloutAccessoryView = self.leftAnnotationButton;
+        view.leftCalloutAccessoryView.hidden = NO;
+        view.draggable = YES;
     }
 }
 
@@ -295,14 +321,13 @@ static bool isLongPress;
         coordinateStart.latitude = [[mapPointStart valueForKey:@"latitude"] doubleValue];
         coordinateStart.longitude = [[mapPointStart valueForKey:@"longitude"] doubleValue];
         
-        [self addRouteForAnotationCoordinate:self.mapView.userLocation.coordinate startCoordinate:coordinateStart];
+        [self createRouteForAnotationCoordinate:self.mapView.userLocation.coordinate startCoordinate:coordinateStart];
     }
-    
 }
 
 //Build routes
 
-- (void) addRouteForAnotationCoordinate:(CLLocationCoordinate2D)endCoordinate startCoordinate:(CLLocationCoordinate2D)startCoordinate {
+- (void) createRouteForAnotationCoordinate:(CLLocationCoordinate2D)endCoordinate startCoordinate:(CLLocationCoordinate2D)startCoordinate {
     
     MKDirections* directions;
     
@@ -344,7 +369,6 @@ static bool isLongPress;
         }
         
     }];
-    
 }
 
 - (void)removeRoutes {
@@ -464,15 +488,18 @@ static bool isLongPress;
     switch (sender.selectedSegmentIndex) {
             
         case SegmentedControlTypeEmpty:
+            isLeftButton = NO;
             [self removeRoutes];
             break;
             
         case SegmentedControlTypeRoad:
+            isLeftButton = YES;
             [self removeRoutes];
             [self pinRoute];
             break;
             
         case SegmentedControlTypeFigure:
+            isLeftButton = YES;
             [self removeRoutes];
             [self createFigure];
             break;
@@ -536,11 +563,13 @@ static bool isLongPress;
     if (!annotationView) {
         return;
     }
-    
-    UIButton* directionButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
+ 
+    UIImage* buttonImage = [UIImage imageNamed:@"Ps-x-button.png"];
+    UIButton* directionButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    [directionButton setImage:buttonImage forState:UIControlStateNormal];
     [directionButton addTarget:self action:@selector(actionRemoveRoute:) forControlEvents:UIControlEventTouchUpInside];
     annotationView.leftCalloutAccessoryView = directionButton;
- 
+    
     if (self.annotationViewRemoveRoute) {
         UIButton* directionButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
         [directionButton addTarget:self action:@selector(actionDirection:) forControlEvents:UIControlEventTouchUpInside];
@@ -551,11 +580,9 @@ static bool isLongPress;
         self.annotationViewRemoveRoute = annotationView;
     }
     
-    
-    
     CLLocationCoordinate2D coordinate = annotationView.annotation.coordinate;
     
-    [self addRouteForAnotationCoordinate:self.mapView.userLocation.coordinate startCoordinate:coordinate];
+    [self createRouteForAnotationCoordinate:self.mapView.userLocation.coordinate startCoordinate:coordinate];
 }
 
 - (void) actionRemoveRoute:(UIButton*) sender {
