@@ -14,6 +14,7 @@
 
 @property (strong, nonatomic) NSMutableArray* mapPointArray;
 @property (strong, nonatomic) CLLocationManager *locationManager;
+@property (weak, nonatomic) MKAnnotationView* annotationViewRemoveRoute;
 
 @end
 
@@ -120,13 +121,13 @@ static bool isLongPress;
         pin.canShowCallout = YES;
         pin.draggable = YES;
         
-        UIButton* descriptionButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-        [descriptionButton addTarget:self action:@selector(actionDescription:) forControlEvents:UIControlEventTouchUpInside];
-        pin.rightCalloutAccessoryView = descriptionButton;
-        
         UIButton* directionButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
         [directionButton addTarget:self action:@selector(actionDirection:) forControlEvents:UIControlEventTouchUpInside];
         pin.leftCalloutAccessoryView = directionButton;
+        
+        UIButton* descriptionButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+        [descriptionButton addTarget:self action:@selector(actionDescription:) forControlEvents:UIControlEventTouchUpInside];
+        pin.rightCalloutAccessoryView = descriptionButton;
     }
     else {
         pin.annotation = annotation;
@@ -181,6 +182,11 @@ static bool isLongPress;
                                        location.longitude];
                 
                 [self.mapView addAnnotation:annotation];
+                
+#warning як передати сендер
+                if (self.annotationViewRemoveRoute) {
+//                    [self actionDirection:<#(UIButton *)#>];
+                }
             }
         }
     }
@@ -531,9 +537,38 @@ static bool isLongPress;
         return;
     }
     
+    UIButton* directionButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
+    [directionButton addTarget:self action:@selector(actionRemoveRoute:) forControlEvents:UIControlEventTouchUpInside];
+    annotationView.leftCalloutAccessoryView = directionButton;
+ 
+    if (self.annotationViewRemoveRoute) {
+        UIButton* directionButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
+        [directionButton addTarget:self action:@selector(actionDirection:) forControlEvents:UIControlEventTouchUpInside];
+        self.annotationViewRemoveRoute.leftCalloutAccessoryView = directionButton;
+        self.annotationViewRemoveRoute = annotationView;
+    }
+    else {
+        self.annotationViewRemoveRoute = annotationView;
+    }
+    
+    
+    
     CLLocationCoordinate2D coordinate = annotationView.annotation.coordinate;
     
     [self addRouteForAnotationCoordinate:self.mapView.userLocation.coordinate startCoordinate:coordinate];
+}
+
+- (void) actionRemoveRoute:(UIButton*) sender {
+    
+    self.annotationViewRemoveRoute = nil;
+    
+    MKAnnotationView* annotationView = [sender superAnnotationView];
+    
+    UIButton* directionButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
+    [directionButton addTarget:self action:@selector(actionDirection:) forControlEvents:UIControlEventTouchUpInside];
+    annotationView.leftCalloutAccessoryView = directionButton;
+    
+    [self removeRoutes];
 }
 
 @end
