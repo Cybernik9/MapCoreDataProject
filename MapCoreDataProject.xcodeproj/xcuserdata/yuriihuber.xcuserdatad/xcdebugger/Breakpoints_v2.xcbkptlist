@@ -36,11 +36,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MapCoreDataProject/MapViewController.m"
-            timestampString = "469290676.857753"
+            timestampString = "469381934.037537"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "573"
-            endingLineNumber = "573"
+            startingLineNumber = "590"
+            endingLineNumber = "590"
             landmarkName = "-actionDirection:"
             landmarkType = "5">
          </BreakpointContent>
@@ -52,12 +52,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MapCoreDataProject/MapViewController.m"
-            timestampString = "469290676.857753"
+            timestampString = "469381934.037537"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "590"
-            endingLineNumber = "590"
+            startingLineNumber = "607"
+            endingLineNumber = "607"
             landmarkName = "-actionRemoveRoute:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MapCoreDataProject/MapViewController.m"
+            timestampString = "469382690.302092"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "620"
+            endingLineNumber = "620"
+            landmarkName = "-actionRemovePin:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

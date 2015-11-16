@@ -138,7 +138,25 @@ static bool isLeftButton;
 //        
 //        UIView* viewRightCalloutAccessoryView = [UIView alloc] initWithFrame:CGRectMake(<#CGFloat x#>, <#CGFloat y#>, <#CGFloat width#>, <#CGFloat height#>)
         
-        pin.rightCalloutAccessoryView = leftDescriptionButton;
+        UIButton* descriptionButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+        [descriptionButton addTarget:self action:@selector(actionDescription:) forControlEvents:UIControlEventTouchUpInside];
+        //UIButton* forAddCellToTableView = [UIButton buttonWithType:UIButtonTypeContactAdd];
+        //[forAddCellToTableView addTarget:self action:@selector(forAddCellToTableView:) forControlEvents:UIControlEventTouchUpInside];
+        
+        UIButton* forAddCellToTableView = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 25, 25)];
+        [forAddCellToTableView setBackgroundImage:[UIImage imageNamed:@"removeButton"] forState:UIControlStateNormal];
+        [forAddCellToTableView addTarget:self action:@selector(actionRemovePin:) forControlEvents:UIControlEventTouchUpInside];
+        //pin.leftCalloutAccessoryView = directionButton;
+        
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0 ,0 , 50, 50)];
+        [view addSubview:descriptionButton];
+        descriptionButton.center = CGPointMake(12.f, 25.f);
+        forAddCellToTableView.center = CGPointMake(37.f, 25.f);
+        [view insertSubview:forAddCellToTableView belowSubview:descriptionButton];
+        [descriptionButton sizeToFit];
+        pin.rightCalloutAccessoryView = view;
+        
+        //pin.rightCalloutAccessoryView = leftDescriptionButton;
     }
     else {
         pin.annotation = annotation;
@@ -564,9 +582,8 @@ static bool isLeftButton;
         return;
     }
  
-    UIImage* buttonImage = [UIImage imageNamed:@"Ps-x-button.png"];
-    UIButton* directionButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-    [directionButton setImage:buttonImage forState:UIControlStateNormal];
+    UIButton* directionButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 25, 25)];
+    [directionButton setBackgroundImage:[UIImage imageNamed:@"removeButton"] forState:UIControlStateNormal];
     [directionButton addTarget:self action:@selector(actionRemoveRoute:) forControlEvents:UIControlEventTouchUpInside];
     annotationView.leftCalloutAccessoryView = directionButton;
     
@@ -596,6 +613,35 @@ static bool isLeftButton;
     annotationView.leftCalloutAccessoryView = directionButton;
     
     [self removeRoutes];
+}
+
+- (void) actionRemovePin:(UIButton*) sender {
+    
+    NSManagedObjectContext *context = [self managedObjectContext];
+    
+    MKAnnotationView* annotationView = [sender superAnnotationView];
+    
+    //NSManagedObject *mapPoint = annotationView.annotation;
+    
+    [context deleteObject:annotationView.annotation];
+    [self.mapView removeAnnotation:annotationView.annotation];
+    
+//    NSInteger i=0;
+//    for (MapAnnotation* annotation in self.mapPointArray) {
+//        
+//        if ([annotation.title isEqualToString:annotationView.annotation.title]) {
+//            [context deleteObject:[self.mapPointArray objectAtIndex:i]];
+//            [self.mapPointArray removeObjectAtIndex:i];
+//        }
+//        i++;
+//    }
+
+    NSError *error = nil;
+    
+    if (![context save:&error]) {
+        
+        NSLog(@"error: %@ %@", error, [error localizedDescription]);
+    }
 }
 
 @end
