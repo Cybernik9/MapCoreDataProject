@@ -19,18 +19,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -42,16 +34,6 @@
                                                                error:nil] mutableCopy];
     
     [self.tableView reloadData];
-}
-
-#pragma mark - MapProtocol -
-
-- (void)mapArayDidChangeValue:(NSArray*)value {
- 
-    if ([value count]) {
-        
-        //
-    }
 }
 
 #pragma mark - Core Data -

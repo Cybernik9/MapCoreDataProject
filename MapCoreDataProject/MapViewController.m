@@ -130,33 +130,17 @@ static bool isLeftButton;
         UIButton* leftDescriptionButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
         [leftDescriptionButton addTarget:self action:@selector(actionDescription:) forControlEvents:UIControlEventTouchUpInside];
         
-#warning добавити кнопки
-//        UIButton* rightDescriptionButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-//        [rightDescriptionButton addTarget:self action:@selector(actionDescription:) forControlEvents:UIControlEventTouchUpInside];
-        
-//        NSInteger leftButtonSize = leftDescriptionButton.frame.origin.x + leftDescriptionButton
-//        
-//        UIView* viewRightCalloutAccessoryView = [UIView alloc] initWithFrame:CGRectMake(<#CGFloat x#>, <#CGFloat y#>, <#CGFloat width#>, <#CGFloat height#>)
-        
-        UIButton* descriptionButton = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-        [descriptionButton addTarget:self action:@selector(actionDescription:) forControlEvents:UIControlEventTouchUpInside];
-        //UIButton* forAddCellToTableView = [UIButton buttonWithType:UIButtonTypeContactAdd];
-        //[forAddCellToTableView addTarget:self action:@selector(forAddCellToTableView:) forControlEvents:UIControlEventTouchUpInside];
-        
-        UIButton* forAddCellToTableView = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 25, 25)];
-        [forAddCellToTableView setBackgroundImage:[UIImage imageNamed:@"removeButton"] forState:UIControlStateNormal];
-        [forAddCellToTableView addTarget:self action:@selector(actionRemovePin:) forControlEvents:UIControlEventTouchUpInside];
-        //pin.leftCalloutAccessoryView = directionButton;
+        UIButton* rightDescriptionButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 25, 25)];
+        [rightDescriptionButton setBackgroundImage:[UIImage imageNamed:@"removeButton"] forState:UIControlStateNormal];
+        [rightDescriptionButton addTarget:self action:@selector(actionRemovePin:) forControlEvents:UIControlEventTouchUpInside];
         
         UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0 ,0 , 50, 50)];
-        [view addSubview:descriptionButton];
-        descriptionButton.center = CGPointMake(12.f, 25.f);
-        forAddCellToTableView.center = CGPointMake(37.f, 25.f);
-        [view insertSubview:forAddCellToTableView belowSubview:descriptionButton];
-        [descriptionButton sizeToFit];
+        [view addSubview:leftDescriptionButton];
+        leftDescriptionButton.center = CGPointMake(12.f, 25.f);
+        rightDescriptionButton.center = CGPointMake(37.f, 25.f);
+        [view insertSubview:rightDescriptionButton belowSubview:leftDescriptionButton];
+        [leftDescriptionButton sizeToFit];
         pin.rightCalloutAccessoryView = view;
-        
-        //pin.rightCalloutAccessoryView = leftDescriptionButton;
     }
     else {
         pin.annotation = annotation;
@@ -215,7 +199,6 @@ static bool isLeftButton;
                 if (self.annotationViewRemoveRoute) {
                     [self removeRoutes];
                     [self createRouteForAnotationCoordinate:self.mapView.userLocation.coordinate startCoordinate:annotation.coordinate];
-                    //self.annotationViewRemoveRoute = annotation;
                 }
             }
         }
@@ -225,12 +208,10 @@ static bool isLeftButton;
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
     
     if (isLeftButton) {
-        //view.leftCalloutAccessoryView = nil;
         view.leftCalloutAccessoryView.hidden = YES;
         view.draggable = NO;
     }
     else {
-        //view.leftCalloutAccessoryView = self.leftAnnotationButton;
         view.leftCalloutAccessoryView.hidden = NO;
         view.draggable = YES;
     }
@@ -278,7 +259,7 @@ static bool isLeftButton;
         NSLog(@"Location found from Map: %f %f",location.latitude,location.longitude);
         
         UIAlertController *alertController = [UIAlertController
-                                              alertControllerWithTitle:@"Enter city"
+                                              alertControllerWithTitle:@"Enter point"
                                               message:[NSString stringWithFormat:@"With coordinates:\n%f %f",
                                                        location.latitude,location.longitude]
                                               preferredStyle:UIAlertControllerStyleAlert];
@@ -350,7 +331,6 @@ static bool isLeftButton;
     MKDirections* directions;
     
     MKDirectionsRequest* request = [[MKDirectionsRequest alloc] init];
-    
     MKPlacemark* startPlacemark = [[MKPlacemark alloc] initWithCoordinate:startCoordinate
                                                         addressDictionary:nil];
     
@@ -364,9 +344,7 @@ static bool isLeftButton;
     MKMapItem* endDestination = [[MKMapItem alloc] initWithPlacemark:endPlacemark];
     
     request.destination = endDestination;
-    
     request.transportType = MKDirectionsTransportTypeAutomobile;
-    
     request.requestsAlternateRoutes = YES;
     
     directions = [[MKDirections alloc] initWithRequest:request];
@@ -375,14 +353,19 @@ static bool isLeftButton;
         
         if (error) {
             
+            NSLog(@"%@", error);
+            
         } else if ([response.routes count] == 0) {
+            
+            NSLog(@"routes = 0");
             
         } else {
             
             NSMutableArray *array  = [NSMutableArray array];
             for (MKRoute *route in response.routes) {
                 [array addObject:route.polyline];
-            }//magic don't touch
+            }
+            
             [self.mapView addOverlays:array level:MKOverlayLevelAboveRoads];
         }
         
@@ -429,10 +412,7 @@ static bool isLeftButton;
     UIAlertAction* alertAction = [UIAlertAction
                                   actionWithTitle:title
                                   style:UIAlertActionStyleCancel
-                                  handler:^(UIAlertAction * action)
-                                  {
-                                      //[alert dismissViewControllerAnimated:YES completion:nil];
-                                      
+                                  handler:^(UIAlertAction * action) {
                                   }];
     
     [alert addAction:alertAction];
@@ -495,10 +475,11 @@ static bool isLeftButton;
 - (IBAction)actionAddPoint:(id)sender {
     
     isLongPress = YES;
+    
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]
                                                initWithTarget:self action:@selector(longPress:)];
+    
     [self.mapView addGestureRecognizer:longPress];
-    //[longPress release];
 }
 
 - (IBAction)actionSegmentedControl:(UISegmentedControl *)sender {
@@ -551,7 +532,6 @@ static bool isLeftButton;
          NSString* message = nil;
          
          if (error) {
-             
              message = [error localizedDescription];
              
          } else {
@@ -559,7 +539,6 @@ static bool isLeftButton;
              if ([placemarks count] > 0) {
                  
                  MKPlacemark* placeMark = [placemarks firstObject];
-                 
                  message = [placeMark.addressDictionary description];
                  
              } else {
@@ -620,26 +599,30 @@ static bool isLeftButton;
     NSManagedObjectContext *context = [self managedObjectContext];
     
     MKAnnotationView* annotationView = [sender superAnnotationView];
+    MapAnnotation* removeAnnotatio = annotationView.annotation;
     
-    //NSManagedObject *mapPoint = annotationView.annotation;
-    
-    [context deleteObject:annotationView.annotation];
+    for (int i=0; i<[self.mapPointArray count]; i++) {
+        
+        NSManagedObject* mapPoint = [self.mapPointArray objectAtIndex:i];
+        
+        NSString* removePinSubtitle = [NSString stringWithFormat:@"%.5g, %.5g",
+                                       [[mapPoint valueForKey:@"latitude"] doubleValue],
+                                       [[mapPoint valueForKey:@"longitude"] doubleValue]];
+        
+        if ([[mapPoint valueForKey:@"namePoint"] isEqualToString:removeAnnotatio.title] &&
+             [removePinSubtitle isEqualToString:removeAnnotatio.subtitle]) {
+                 
+            [context deleteObject:[self.mapPointArray objectAtIndex:i]];
+            [self.mapPointArray removeObjectAtIndex:i];
+            break;
+        }
+    }
+
     [self.mapView removeAnnotation:annotationView.annotation];
     
-//    NSInteger i=0;
-//    for (MapAnnotation* annotation in self.mapPointArray) {
-//        
-//        if ([annotation.title isEqualToString:annotationView.annotation.title]) {
-//            [context deleteObject:[self.mapPointArray objectAtIndex:i]];
-//            [self.mapPointArray removeObjectAtIndex:i];
-//        }
-//        i++;
-//    }
-
     NSError *error = nil;
     
     if (![context save:&error]) {
-        
         NSLog(@"error: %@ %@", error, [error localizedDescription]);
     }
 }
