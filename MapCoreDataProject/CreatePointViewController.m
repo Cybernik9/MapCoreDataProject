@@ -19,9 +19,9 @@
     // Do any additional setup after loading the view.
     
     if (self.create) {
-        self.namePointTextField.text = [self.create valueForKey:@"namePoint"];
-        self.latitudeTextField.text = [NSString stringWithFormat:@"%@", [self.create valueForKey:@"latitude"]];
-        self.longitudeTextField.text = [NSString stringWithFormat:@"%@", [self.create valueForKey:@"longitude"]];
+        self.namePointTextField.text = self.create.namePoint;
+        self.latitudeTextField.text = [NSString stringWithFormat:@"%@", self.create.latitude];
+        self.longitudeTextField.text = [NSString stringWithFormat:@"%@", self.create.longitude];
     }
 }
 
@@ -29,16 +29,6 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 #pragma mark - Core Data -
 
@@ -95,9 +85,9 @@
     
     if (self.create) {
         
-        [self.create setValue:self.namePointTextField.text forKey:@"namePoint"];
-        [self.create setValue:[NSNumber numberWithDouble:latitude] forKey:@"latitude"];
-        [self.create setValue:[NSNumber numberWithDouble:longitude] forKey:@"longitude"];
+        self.create.namePoint = self.namePointTextField.text;
+        self.create.latitude = [NSNumber numberWithDouble:latitude];
+        self.create.longitude = [NSNumber numberWithDouble:longitude];
         
         [self saveToCoreData:context];
         
@@ -105,12 +95,12 @@
     }
     else {
         
-        NSManagedObject *newMapPoint = [NSEntityDescription insertNewObjectForEntityForName:@"MapPoints"
+        MapPoints *newMapPoint = [NSEntityDescription insertNewObjectForEntityForName:@"MapPoints"
                                                                      inManagedObjectContext:context];
         
-        [newMapPoint setValue:self.namePointTextField.text forKey:@"namePoint"];
-        [newMapPoint setValue:[NSNumber numberWithDouble:latitude] forKey:@"latitude"];
-        [newMapPoint setValue:[NSNumber numberWithDouble:longitude] forKey:@"longitude"];
+        newMapPoint.namePoint = self.namePointTextField.text;
+        newMapPoint.latitude = [NSNumber numberWithDouble:latitude];
+        newMapPoint.longitude = [NSNumber numberWithDouble:longitude];
         
         [self saveToCoreData:context];
     }

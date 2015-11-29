@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
+#import "MapPoints.h"
 
 @interface CreatePointViewController : UIViewController 
 
@@ -15,7 +16,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *latitudeTextField;
 @property (weak, nonatomic) IBOutlet UITextField *longitudeTextField;
 
-@property (strong, nonatomic) NSManagedObject *create;
+@property (strong, nonatomic) MapPoints *create;
 
 - (IBAction)actionSaveButton:(id)sender;
 

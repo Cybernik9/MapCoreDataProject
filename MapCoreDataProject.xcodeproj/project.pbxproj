@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F86489F1C0B30D20066BA3A /* MapPoints+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F86489C1C0B30D20066BA3A /* MapPoints+CoreDataProperties.m */; };
+		7F8648A01C0B30D20066BA3A /* MapPoints.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F86489E1C0B30D20066BA3A /* MapPoints.m */; };
 		845F586D1BEB7CAA00DED68C /* MapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 845F586C1BEB7CAA00DED68C /* MapAnnotation.m */; };
 		845F58721BEB865A00DED68C /* PointTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 845F58711BEB865A00DED68C /* PointTableViewController.m */; };
 		845F58751BEB885B00DED68C /* CreatePointViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 845F58741BEB885B00DED68C /* CreatePointViewController.m */; };
@@ -41,6 +43,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7F86489B1C0B30D20066BA3A /* MapPoints+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MapPoints+CoreDataProperties.h"; path = "MapCoreDataProject/Models/MapPoints+CoreDataProperties.h"; sourceTree = "<group>"; };
+		7F86489C1C0B30D20066BA3A /* MapPoints+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MapPoints+CoreDataProperties.m"; path = "MapCoreDataProject/Models/MapPoints+CoreDataProperties.m"; sourceTree = "<group>"; };
+		7F86489D1C0B30D20066BA3A /* MapPoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapPoints.h; path = MapCoreDataProject/Models/MapPoints.h; sourceTree = "<group>"; };
+		7F86489E1C0B30D20066BA3A /* MapPoints.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapPoints.m; path = MapCoreDataProject/Models/MapPoints.m; sourceTree = "<group>"; };
 		845F586B1BEB7CAA00DED68C /* MapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapAnnotation.h; sourceTree = "<group>"; };
 		845F586C1BEB7CAA00DED68C /* MapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapAnnotation.m; sourceTree = "<group>"; };
 		845F58701BEB865A00DED68C /* PointTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PointTableViewController.h; sourceTree = "<group>"; };
@@ -95,6 +101,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7F8648A11C0B30D60066BA3A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				7F86489B1C0B30D20066BA3A /* MapPoints+CoreDataProperties.h */,
+				7F86489C1C0B30D20066BA3A /* MapPoints+CoreDataProperties.m */,
+				7F86489D1C0B30D20066BA3A /* MapPoints.h */,
+				7F86489E1C0B30D20066BA3A /* MapPoints.m */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
 		845F586E1BEB7CB200DED68C /* Map */ = {
 			isa = PBXGroup;
 			children = (
@@ -122,6 +139,7 @@
 		84B848A31BEB5F8B00E6F90B = {
 			isa = PBXGroup;
 			children = (
+				7F8648A11C0B30D60066BA3A /* Models */,
 				84B848AE1BEB5F8B00E6F90B /* MapCoreDataProject */,
 				84B848CB1BEB5F8B00E6F90B /* MapCoreDataProjectTests */,
 				84B848D61BEB5F8B00E6F90B /* MapCoreDataProjectUITests */,
@@ -316,11 +334,13 @@
 				84B848B71BEB5F8B00E6F90B /* MapViewController.m in Sources */,
 				84B848B41BEB5F8B00E6F90B /* AppDelegate.m in Sources */,
 				84B848B11BEB5F8B00E6F90B /* main.m in Sources */,
+				7F8648A01C0B30D20066BA3A /* MapPoints.m in Sources */,
 				845F58751BEB885B00DED68C /* CreatePointViewController.m in Sources */,
 				84B848BD1BEB5F8B00E6F90B /* MapCoreDataProject.xcdatamodeld in Sources */,
 				845F58721BEB865A00DED68C /* PointTableViewController.m in Sources */,
 				84678C3F1BF230F1008888A7 /* UIView+MKAnnotationView.m in Sources */,
 				845F586D1BEB7CAA00DED68C /* MapAnnotation.m in Sources */,
+				7F86489F1C0B30D20066BA3A /* MapPoints+CoreDataProperties.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

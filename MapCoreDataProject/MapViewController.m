@@ -9,11 +9,12 @@
 #import "MapViewController.h"
 #import "MapAnnotation.h"
 #import "UIView+MKAnnotationView.h"
+#import "MapPoints.h"
 
 @interface MapViewController () <MKMapViewDelegate>
 
 @property (strong, nonatomic) NSMutableArray* mapPointArray;
-@property (strong, nonatomic) CLLocationManager *locationManager;
+@property (strong, nonatomic) CLLocationManager* locationManager;
 @property (weak, nonatomic) MKAnnotationView* annotationViewRemoveRoute;
 @property (weak, nonatomic) UIButton* leftAnnotationButton;
 
@@ -37,6 +38,9 @@ typedef NS_ENUM(NSUInteger, SegmentedControlType) {
 
 static bool isLongPress;
 static bool isLeftButton;
+static bool isMainRoute;
+
+static NSString* namePointRoute;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -83,10 +87,20 @@ static bool isLeftButton;
 
     if ([overlay isKindOfClass:[MKPolyline class]]) {
         
-        MKPolylineRenderer* renderer = [[MKPolylineRenderer alloc] initWithOverlay:overlay];
-        renderer.lineWidth = 2.f;
-        renderer.strokeColor = [UIColor colorWithRed:0.f green:0.5f blue:1.f alpha:0.9f];
-        return renderer;
+         MKPolylineRenderer* renderer = [[MKPolylineRenderer alloc] initWithOverlay:overlay];
+        
+        if (!isMainRoute) {
+            
+            renderer.lineWidth = 3.f;
+            renderer.strokeColor = [UIColor colorWithRed:0.f green:0.1f blue:1.f alpha:0.9f];
+            return renderer;
+        }
+        else {
+        
+            renderer.lineWidth = 1.5f;
+            renderer.strokeColor = [UIColor colorWithRed:0.f green:0.5f blue:1.f alpha:0.5f];
+            return renderer;
+        }
     }
     else if ([overlay isKindOfClass:[MKPolygon class]]) {
     
@@ -152,22 +166,28 @@ static bool isLeftButton;
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view didChangeDragState:(MKAnnotationViewDragState)newState
    fromOldState:(MKAnnotationViewDragState)oldState {
     
-    static int i;
+    static NSInteger i;
     static NSString* strName;
+    static NSString* strTemp;
     
     if (newState == MKAnnotationViewDragStateStarting) {
         
         CLLocationCoordinate2D location = view.annotation.coordinate;
-        MKMapPoint point = MKMapPointForCoordinate(location);
-        
-        NSLog(@"\nNEW location = {%f, %f}\npoint = %@", location.latitude, location.longitude, MKStringFromMapPoint(point));
         
         for (i=0; i<[self.mapPointArray count]; i++) {
             
-            if ([[[self.mapPointArray objectAtIndex:i] valueForKey:@"latitude"] doubleValue] == location.latitude &&
-                [[[self.mapPointArray objectAtIndex:i] valueForKey:@"longitude"] doubleValue] == location.longitude) {
+            MapPoints* mapPoint = [self.mapPointArray objectAtIndex:i];
+            
+            if ([mapPoint.latitude doubleValue] == location.latitude &&
+                [mapPoint.longitude doubleValue] == location.longitude) {
                 
-                strName = [[self.mapPointArray objectAtIndex:i] valueForKey:@"namePoint"];
+                strName = mapPoint.namePoint;
+                
+                strTemp = [NSString stringWithFormat:@"%@ = %.5g, %.5g",
+                           mapPoint.namePoint,
+                           [mapPoint.latitude doubleValue],
+                           [mapPoint.longitude doubleValue]];
+                
                 return;
             }
         }
@@ -175,14 +195,11 @@ static bool isLeftButton;
     else if (newState == MKAnnotationViewDragStateEnding) {
         
         CLLocationCoordinate2D location = view.annotation.coordinate;
-        MKMapPoint point = MKMapPointForCoordinate(location);
         
-        NSLog(@"\nStart location = {%f, %f}\npoint = %@", location.latitude, location.longitude, MKStringFromMapPoint(point));
-        
-        NSManagedObject *mapPoint = [self.mapPointArray objectAtIndex:i];
+        MapPoints* mapPoint = [self.mapPointArray objectAtIndex:i];
 
-        [mapPoint setValue:[NSNumber numberWithDouble:location.latitude] forKey:@"latitude"];
-        [mapPoint setValue:[NSNumber numberWithDouble:location.longitude] forKey:@"longitude"];
+        mapPoint.latitude = [NSNumber numberWithDouble:location.latitude];
+        mapPoint.longitude = [NSNumber numberWithDouble:location.longitude];
         
         for (MapAnnotation* annotation in self.mapView.annotations) {
             
@@ -196,12 +213,28 @@ static bool isLeftButton;
                 
                 [self.mapView addAnnotation:annotation];
                 
-                if (self.annotationViewRemoveRoute) {
+                if ([namePointRoute isEqualToString:strTemp]) {
+                    
                     [self removeRoutes];
-                    [self createRouteForAnotationCoordinate:self.mapView.userLocation.coordinate startCoordinate:annotation.coordinate];
+                    
+                    isMainRoute = YES;
+                    [self createRouteForAnotationCoordinate:self.mapView.userLocation.coordinate
+                                            startCoordinate:annotation.coordinate];
+                    
+                    isMainRoute = NO;
+                    [self createRouteForAnotationCoordinate:self.mapView.userLocation.coordinate
+                                            startCoordinate:annotation.coordinate];
+                    }
                 }
             }
         }
+        
+    NSManagedObjectContext *context = [self managedObjectContext];
+    NSError *error = nil;
+    
+    if (![context save:&error]) {
+        
+        NSLog(@"error: %@ %@", error, [error localizedDescription]);
     }
 }
 
@@ -226,17 +259,17 @@ static bool isLeftButton;
     self.mapPointArray = [[managedObjectContext executeFetchRequest:fetchRequest
                                                               error:nil] mutableCopy];
     
-    for (int i=0; i<[self.mapPointArray count]; i++) {
+    for (NSInteger i=0; i<[self.mapPointArray count]; i++) {
         
-        NSManagedObject *mapPoint = [self.mapPointArray objectAtIndex:i];
+        MapPoints *mapPoint = [self.mapPointArray objectAtIndex:i];
         MapAnnotation *annotation = [[MapAnnotation alloc] init];
         
         CLLocationCoordinate2D coordinate;
-        coordinate.latitude = [[mapPoint valueForKey:@"latitude"] doubleValue];
-        coordinate.longitude = [[mapPoint valueForKey:@"longitude"] doubleValue];
+        coordinate.latitude = [mapPoint.latitude doubleValue];
+        coordinate.longitude = [mapPoint.longitude doubleValue];
         
         annotation.coordinate = coordinate;
-        annotation.title = [mapPoint valueForKey:@"namePoint"];
+        annotation.title = mapPoint.namePoint;
         annotation.subtitle = [NSString stringWithFormat:@"%.5g, %.5g",
                                annotation.coordinate.latitude,
                                annotation.coordinate.longitude];
@@ -248,15 +281,12 @@ static bool isLeftButton;
 - (void)longPress:(UILongPressGestureRecognizer*)gesture {
     
     if (gesture.state == UIGestureRecognizerStateEnded && isLongPress) {
-        NSLog(@"Long Press");
         
         isLongPress = NO;
         
         CGPoint touchPoint = [gesture locationInView:self.mapView];
         CLLocationCoordinate2D location =
         [self.mapView convertPoint:touchPoint toCoordinateFromView:self.mapView];
-        
-        NSLog(@"Location found from Map: %f %f",location.latitude,location.longitude);
         
         UIAlertController *alertController = [UIAlertController
                                               alertControllerWithTitle:@"Enter point"
@@ -282,12 +312,12 @@ static bool isLeftButton;
                                          UITextField * textField = alertController.textFields.firstObject;
                                          
                                          NSManagedObjectContext *context = [self managedObjectContext];
-                                         NSManagedObject *newMapPoint = [NSEntityDescription insertNewObjectForEntityForName:@"MapPoints"
+                                         MapPoints *newMapPoint = [NSEntityDescription insertNewObjectForEntityForName:@"MapPoints"
                                                                     inManagedObjectContext:context];
                                          
-                                         [newMapPoint setValue:textField.text forKey:@"namePoint"];
-                                         [newMapPoint setValue:[NSNumber numberWithDouble:location.latitude] forKey:@"latitude"];
-                                         [newMapPoint setValue:[NSNumber numberWithDouble:location.longitude] forKey:@"longitude"];
+                                         newMapPoint.namePoint = textField.text;
+                                         newMapPoint.latitude = [NSNumber numberWithDouble:location.latitude];
+                                         newMapPoint.longitude = [NSNumber numberWithDouble:location.longitude];
                                          
                                          NSError *error = nil;
                                          
@@ -314,19 +344,25 @@ static bool isLeftButton;
     
     for (int i=0; i<[self.mapPointArray count]; i++) {
         
-        NSManagedObject *mapPointStart = [self.mapPointArray objectAtIndex:i];
+        MapPoints *mapPointStart = [self.mapPointArray objectAtIndex:i];
         
         CLLocationCoordinate2D coordinateStart;
-        coordinateStart.latitude = [[mapPointStart valueForKey:@"latitude"] doubleValue];
-        coordinateStart.longitude = [[mapPointStart valueForKey:@"longitude"] doubleValue];
+        coordinateStart.latitude = [mapPointStart.latitude doubleValue];
+        coordinateStart.longitude = [mapPointStart.longitude doubleValue];
         
-        [self createRouteForAnotationCoordinate:self.mapView.userLocation.coordinate startCoordinate:coordinateStart];
+        isMainRoute = YES;
+        [self createRouteForAnotationCoordinate:self.mapView.userLocation.coordinate
+                                startCoordinate:coordinateStart];
+        
+        isMainRoute = NO;
+        [self createRouteForAnotationCoordinate:self.mapView.userLocation.coordinate
+                                startCoordinate:coordinateStart];
     }
 }
 
 //Build routes
-
-- (void) createRouteForAnotationCoordinate:(CLLocationCoordinate2D)endCoordinate startCoordinate:(CLLocationCoordinate2D)startCoordinate {
+- (void) createRouteForAnotationCoordinate:(CLLocationCoordinate2D)endCoordinate
+                           startCoordinate:(CLLocationCoordinate2D)startCoordinate {
     
     MKDirections* directions;
     
@@ -345,7 +381,9 @@ static bool isLeftButton;
     
     request.destination = endDestination;
     request.transportType = MKDirectionsTransportTypeAutomobile;
-    request.requestsAlternateRoutes = YES;
+    request.requestsAlternateRoutes = isMainRoute;
+    
+    BOOL temp = isMainRoute;
     
     directions = [[MKDirections alloc] initWithRequest:request];
     
@@ -366,6 +404,8 @@ static bool isLeftButton;
                 [array addObject:route.polyline];
             }
             
+            isMainRoute = temp;
+            
             [self.mapView addOverlays:array level:MKOverlayLevelAboveRoads];
         }
         
@@ -381,11 +421,11 @@ static bool isLeftButton;
     
     CLLocationCoordinate2D coordinates[self.mapPointArray.count];
     
-    for (int i=0; i < [self.mapPointArray count]; i++) {
+    for (NSInteger i=0; i < [self.mapPointArray count]; i++) {
         
-        NSManagedObject *mapPoint = [self.mapPointArray objectAtIndex:i];
-        coordinates[i].latitude = [[mapPoint valueForKey:@"latitude"] doubleValue];
-        coordinates[i].longitude = [[mapPoint valueForKey:@"longitude"] doubleValue];
+        MapPoints* mapPoint = [self.mapPointArray objectAtIndex:i];
+        coordinates[i].latitude = [mapPoint.latitude doubleValue];
+        coordinates[i].longitude = [mapPoint.longitude doubleValue];
     }
     
     // create a polygon with all cooridnates
@@ -448,7 +488,7 @@ static bool isLeftButton;
 
 - (IBAction)actionChangeMapType:(id)sender {
     
-    static int mapType;
+    static NSInteger mapType;
     
     switch (mapType) {
             
@@ -578,7 +618,17 @@ static bool isLeftButton;
     
     CLLocationCoordinate2D coordinate = annotationView.annotation.coordinate;
     
-    [self createRouteForAnotationCoordinate:self.mapView.userLocation.coordinate startCoordinate:coordinate];
+    isMainRoute = YES;
+    [self createRouteForAnotationCoordinate:self.mapView.userLocation.coordinate
+                            startCoordinate:coordinate];
+    
+    isMainRoute = NO;
+    [self createRouteForAnotationCoordinate:self.mapView.userLocation.coordinate
+                            startCoordinate:coordinate];
+    
+    namePointRoute = [NSString stringWithFormat:@"%@ = %@",
+                      annotationView.annotation.title,
+                      annotationView.annotation.subtitle];
 }
 
 - (void) actionRemoveRoute:(UIButton*) sender {
@@ -601,15 +651,15 @@ static bool isLeftButton;
     MKAnnotationView* annotationView = [sender superAnnotationView];
     MapAnnotation* removeAnnotatio = annotationView.annotation;
     
-    for (int i=0; i<[self.mapPointArray count]; i++) {
+    for (NSInteger i=0; i<[self.mapPointArray count]; i++) {
         
-        NSManagedObject* mapPoint = [self.mapPointArray objectAtIndex:i];
+        MapPoints* mapPoint = [self.mapPointArray objectAtIndex:i];
         
         NSString* removePinSubtitle = [NSString stringWithFormat:@"%.5g, %.5g",
-                                       [[mapPoint valueForKey:@"latitude"] doubleValue],
-                                       [[mapPoint valueForKey:@"longitude"] doubleValue]];
+                                       [mapPoint.latitude doubleValue],
+                                       [mapPoint.longitude doubleValue]];
         
-        if ([[mapPoint valueForKey:@"namePoint"] isEqualToString:removeAnnotatio.title] &&
+        if ([mapPoint.namePoint isEqualToString:removeAnnotatio.title] &&
              [removePinSubtitle isEqualToString:removeAnnotatio.subtitle]) {
                  
             [context deleteObject:[self.mapPointArray objectAtIndex:i]];
